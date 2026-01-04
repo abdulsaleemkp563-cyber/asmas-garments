@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Saleem Dress Shop</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body{
+    margin:0;
+    font-family:Arial;
+    background:#f2f2f2;
+}
+header{
+    background:#0090ff;
+    color:white;
+    padding:20px;
+    text-align:center;
+}
+header img{
+    width:80px;
+    border-radius:50%;
+}
+.banner{
+    background:#e6f2ff;
+    padding:20px;
+    text-align:center;
+    font-size:18px;
+    font-weight:bold;
+}
+nav{
+    background:white;
+    padding:10px;
+    text-align:center;
+}
+nav a{
+    margin:10px;
+    color:#0090ff;
+    text-decoration:none;
+    font-weight:bold;
+}
+.section{
+    padding:15px;
+}
+.card{
+    background:white;
+    border-radius:10px;
+    padding:10px;
+    margin-bottom:15px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.15);
+}
+.card img{
+    width:100%;
+    border-radius:10px;
+}
+.price{
+    color:green;
+    font-size:18px;
+    font-weight:bold;
+}
+.btn{
+    display:block;
+    background:#25D366;
+    color:white;
+    padding:12px;
+    text-align:center;
+    border-radius:5px;
+    text-decoration:none;
+    margin-top:10px;
+}
+.footer{
+    background:#111;
+    color:white;
+    text-align:center;
+    padding:15px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<img src="https://via.placeholder.com/150?text=LOGO">
+<h1>Saleem Dress Shop</h1>
+<p>Online Dress Store</p>
+</header>
+
+<div class="banner">
+🎉 Quality Dresses | Best Price | WhatsApp Order 🎉
+</div>
+
+<nav>
+<a href="#shop">Shop</a>
+<a href="#payment">Payment</a>
+<a href="#contact">Contact</a>
+</nav>
+
+<div class="section" id="shop">
+
+<div class="card">
+<img src="https://via.placeholder.com/400x400?text=Kurti">
+<h3>Designer Kurti</h3>
+<p>Premium quality designer kurti</p>
+<p class="price">₹999</p>
+<a class="btn" href="https://wa.me/919037531655?text=I want Designer Kurti - ₹999">Order on WhatsApp</a>
+</div>
+
+<div class="card">
+<img src="https://via.placeholder.com/400x400?text=Party+Wear">
+<h3>Party Wear Dress</h3>
+<p>Stylish party wear collection</p>
+<p class="price">₹1499</p>
+<a class="btn" href="https://wa.me/919037531655?text=I want Party Wear Dress - ₹1499">Order on WhatsApp</a>
+</div>
+
+<div class="card">
+<img src="https://via.placeholder.com/400x400?text=Kids+Dress">
+<h3>Kids Fancy Dress</h3>
+<p>Comfortable kids fancy wear</p>
+<p class="price">₹799</p>
+<a class="btn" href="https://wa.me/919037531655?text=I want Kids Fancy Dress - ₹799">Order on WhatsApp</a>
+</div>
+
+</div>
+
+<div class="section" id="payment">
+<div class="card">
+<h3>Payment Methods</h3>
+<p>✔ Google Pay</p>
+<p>✔ PhonePe</p>
+<p>✔ Cash on Delivery Available</p>
+</div>
+</div>
+
+<div class="section" id="contact">
+<div class="card">
+<h3>Contact Us</h3>
+<p>📞 WhatsApp: 919037531655</p>
+<p>📍 Kerala, India</p>
+</div>
+</div>
+
+<div class="footer">
+<p>© 2026 Saleem Dress Shop</p>
+</div>
+
+</body>
+</html>
