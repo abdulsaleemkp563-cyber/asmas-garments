@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        /* Dropdown Styles */
+        .dropdown {
+            position: relative;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        .dropdown-header {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .dropdown-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            max-height: 150px;
+            overflow-y: auto;
+            z-index: 10;
+            display: none;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+        }
+        
+        .dropdown-list.show {
+            display: block;
+        }
+        
+        .dropdown-item {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .dropdown-item:hover {
+            background: #f0f5ff;
+        }
+        
+        .dropdown-item.delete {
+            color: #ff4444;
+            font-weight: bold;
+            background: #fff5f5;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+        
+        .buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        button {
+            padding: 14px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        #saveBtn {
+            background: #2196F3;
+        }
+        
+        #downloadBtn {
+            background: #FF9800;
+            grid-column: span 2;
+            display: none;
+        }
+        
+        .qr-container {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+        }
+        
+        #qrImage {
+            width: 200px;
+            height: 200px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background: white;
+        }
+        
+        .qr-preview {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .preview-item {
+            font-size: 16px;
+            margin: 8px 0;
+            padding: 8px;
+            background: white;
+            border-radius: 5px;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        /* Stats */
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            background: #f0f5ff;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 12px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2196F3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>QR Generator</h1>
+        
+        <div class="input-group">
+            <!-- UPI Dropdown -->
+            <div class="dropdown">
+                <div class="dropdown-header" onclick="toggleDropdown()">
+                    <span id="selectedUpi">Select Saved UPI</span>
+                    <span>▼</span>
+                </div>
+                <div class="dropdown-list" id="dropdownList">
+                    <!-- Saved UPI IDs will appear here -->
+                </div>
+            </div>
+            
+            <input type="text" id="upi" placeholder="UPI ID (name@upi)" value="test@upi">
+            <input type="text" id="name" placeholder="Name" value="John">
+            <input type="number" id="amount" placeholder="Amount (₹)" value="100">
+        </div>
+        
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value" id="savedCount">0</div>
+                <div>Saved</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="qrCount">0</div>
+                <div>Generated</div>
+            </div>
+        </div>
+        
+        <div class="buttons">
+            <button onclick="saveUpi()" id="saveBtn">Save UPI</button>
+            <button onclick="generateQR()">Generate QR</button>
+            <button id="downloadBtn" onclick="downloadQR()">Download QR</button>
+        </div>
+        
+        <div id="message" class="message"></div>
+        
+        <div class="qr-container">
+            <img id="qrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=test@upi&pn=John&am=100&cu=INR" alt="QR Code">
+            
+            <div class="qr-preview">
+                <div class="preview-item" id="previewName">Name: John</div>
+                <div class="preview-item" id="previewAmount">Amount: ₹100</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let savedUpiIds = [];
+        let qrGeneratedCount = 0;
+        
+        // Initialize
+        window.onload = function() {
+            loadSavedUpi();
+            updateStats();
+            generateQR();
+        };
+        
+        // Load saved UPI IDs
+        function loadSavedUpi() {
+            try {
+                const saved = localStorage.getItem('savedUpiIds');
+                if (saved) {
+                    savedUpiIds = JSON.parse(saved);
+                    updateDropdown();
+                }
+            } catch (error) {
+                console.error('Error loading saved UPI IDs:', error);
+            }
+        }
+        
+        // Toggle dropdown
+        function toggleDropdown() {
+            const list = document.getElementById('dropdownList');
+            list.classList.toggle('show');
+        }
+        
+        // Update dropdown list
+        function updateDropdown() {
+            const list = document.getElementById('dropdownList');
+            list.innerHTML = '';
+            
+            if (savedUpiIds.length === 0) {
+                const item = document.createElement('div');
+                item.className = 'dropdown-item';
+                item.textContent = 'No saved UPI IDs';
+                item.style.color = '#999';
+                list.appendChild(item);
+                return;
+            }
+            
+            // Add saved UPI IDs
+            savedUpiIds.slice().reverse().forEach(upi => {
+                const item = document.createElement('div');
+                item.className = 'dropdown-item';
+                item.textContent = upi;
+                
+                item.addEventListener('click', function() {
+                    document.getElementById('upi').value = upi;
+                    document.getElementById('selectedUpi').textContent = upi;
+                    list.classList.remove('show');
+                    generateQR();
+                });
+                
+                list.appendChild(item);
+            });
+            
+            // Add clear option
+            const clearItem = document.createElement('div');
+            clearItem.className = 'dropdown-item delete';
+            clearItem.textContent = 'Clear All';
+            clearItem.addEventListener('click', function() {
+                if (confirm('Clear all saved UPI IDs?')) {
+                    savedUpiIds = [];
+                    localStorage.removeItem('savedUpiIds');
+                    updateDropdown();
+                    updateStats();
+                    showMessage('All UPI IDs cleared', 'success');
+                }
+            });
+            list.appendChild(clearItem);
+        }
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            const dropdown = document.querySelector('.dropdown');
+            const list = document.getElementById('dropdownList');
+            
+            if (!dropdown.contains(e.target)) {
+                list.classList.remove('show');
+            }
+        });
+        
+        // Update statistics
+        function updateStats() {
+            document.getElementById('savedCount').textContent = savedUpiIds.length;
+            qrGeneratedCount = parseInt(localStorage.getItem('qrGeneratedCount') || '0');
+            document.getElementById('qrCount').textContent = qrGeneratedCount;
+        }
+        
+        // Save UPI ID
+        function saveUpi() {
+            const upi = document.getElementById('upi').value.trim();
+            
+            if (!upi) {
+                showMessage('Enter UPI ID', 'error');
+                return;
+            }
+            
+            if (!upi.includes('@')) {
+                showMessage('Valid UPI required (name@upi)', 'error');
+                return;
+            }
+            
+            // Add if not exists
+            if (!savedUpiIds.includes(upi)) {
+                savedUpiIds.push(upi);
+                localStorage.setItem('savedUpiIds', JSON.stringify(savedUpiIds));
+                updateDropdown();
+                updateStats();
+                showMessage('UPI saved successfully', 'success');
+            } else {
+                showMessage('UPI already saved', 'info');
+            }
+        }
+        
+        function showMessage(text, type) {
+            const msg = document.getElementById('message');
+            msg.textContent = text;
+            msg.className = 'message ' + type;
+            
+            setTimeout(() => {
+                msg.textContent = '';
+                msg.className = 'message';
+            }, 3000);
+        }
+        
+        function generateQR() {
+            const upi = document.getElementById('upi').value.trim();
+            const name = document.getElementById('name').value.trim();
+            const amount = document.getElementById('amount').value;
+            
+            if (!upi) {
+                showMessage('Enter UPI ID', 'error');
+                return;
+            }
+            
+            // Update preview
+            document.getElementById('previewName').textContent = `Name: ${name || 'Not set'}`;
+            document.getElementById('previewAmount').textContent = `Amount: ₹${amount || '0'}`;
+            
+            // Update selected UPI display
+            document.getElementById('selectedUpi').textContent = upi;
+            
+            // Create UPI URL
+            let upiUrl = `upi://pay?pa=${upi}`;
+            upiUrl += `&pn=${encodeURIComponent(name || 'Customer')}`;
+            if (amount && amount > 0) {
+                upiUrl += `&am=${amount}`;
+            }
+            upiUrl += '&cu=INR';
+            
+            // Generate QR
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiUrl)}`;
+            
+            // Set QR image
+            const qrImg = document.getElementById('qrImage');
+            qrImg.src = qrUrl;
+            
+            qrImg.onload = function() {
+                document.getElementById('downloadBtn').style.display = 'block';
+                
+                // Update QR count
+                qrGeneratedCount++;
+                localStorage.setItem('qrGeneratedCount', qrGeneratedCount.toString());
+                updateStats();
+                
+                showMessage('QR generated!', 'success');
+            };
+            
+            qrImg.onerror = function() {
+                // Try backup API
+                const backupUrl = `https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=${encodeURIComponent(upiUrl)}`;
+                qrImg.src = backupUrl;
+                
+                qrImg.onload = function() {
+                    document.getElementById('downloadBtn').style.display = 'block';
+                    showMessage('QR generated (backup API)', 'success');
+                };
+            };
+        }
+        
+        function downloadQR() {
+            const qrImg = document.getElementById('qrImage');
+            const name = document.getElementById('name').value || 'Customer';
+            const amount = document.getElementById('amount').value || '0';
+            
+            // Create image with details
+            const tempImg = new Image();
+            tempImg.crossOrigin = "anonymous";
+            
+            tempImg.onload = function() {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Set canvas size
+                canvas.width = 300;
+                canvas.height = 350;
+                
+                // White background
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw QR
+                ctx.drawImage(tempImg, 50, 20, 200, 200);
+                
+                // Draw name and amount
+                ctx.fillStyle = '#333';
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                
+                ctx.fillText(`Name: ${name}`, 150, 240);
+                ctx.fillText(`Amount: ₹${amount}`, 150, 270);
+                
+                ctx.font = '12px Arial';
+                ctx.fillStyle = '#666';
+                ctx.fillText('Scan to pay via UPI', 150, 300);
+                
+                // Download
+                try {
+                    const link = document.createElement('a');
+                    const filename = `QR_${name}_₹${amount}.png`;
+                    
+                    link.href = canvas.toDataURL('image/png');
+                    link.download = filename;
+                    
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    showMessage('QR downloaded!', 'success');
+                } catch (error) {
+                    showMessage('Download error', 'error');
+                }
+            };
+            
+            tempImg.src = qrImg.src;
+        }
+        
+        // Auto generate when typing
+        document.getElementById('upi').addEventListener('input', function() {
+            setTimeout(generateQR, 500);
+        });
+        
+        document.getElementById('name').addEventListener('input', function() {
+            setTimeout(generateQR, 500);
+        });
+        
+        document.getElementById('amount').addEventListener('input', function() {
+            setTimeout(generateQR, 500);
+        });
+        
+        // Enter key support
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                generateQR();
+            }
+        });
+    </script>
+</body>
+</html>
